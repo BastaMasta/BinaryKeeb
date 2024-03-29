@@ -57,15 +57,19 @@ while True:
     switch_b.update()
 
     if switch_a.fell and not switch_a_pressed:
+        switch_a_pressed = True
         fin_op += "0"
         pixels[0] = WHITE
     if switch_a.rose:
+        switch_a_pressed = False
         pixels[0] = MAGENTA
 
     if switch_b.fell and not switch_b_pressed:
+        switch_b_pressed = True
         fin_op += "1"
         pixels[1] = WHITE
     if switch_b.rose:
+        switch_b_pressed = False
         pixels[1] = CYAN
 
     if len(fin_op) == 8 :
