@@ -15,6 +15,7 @@ import terminalio
 from adafruit_display_text import label
 import adafruit_displayio_sh1107
 
+
 time.sleep(1)  # Sleep for a bit to avoid a race condition on some systems
 
 #  ----- Keyboard setup -----  #
@@ -49,7 +50,52 @@ pixels[0] = MAGENTA
 pixels[1] = CYAN
 
 # ----- Binary setup ----- #
-fin_op = ""
+bin_str = ""
+
+
+# ----- Setting up Binary String Display ----- #
+
+def get_bin():
+    res = " - "
+    res += bin_str
+    for i in 8-len(bin_str):
+        res += "_ "
+    res += "- "
+    return res
+
+
+# ----- Display setup ----- #
+WIDTH = 128
+HEIGHT = 64
+BORDER = 2
+i2c = board.I2C()
+display_address = 0x3C
+display_bus = displayio.I2CDisplay(i2c, device_address=display_address)
+display = adafruit_displayio_sh1107.SH1107(
+    display_bus, width=WIDTH, height=HEIGHT, rotation=0
+)
+
+splash = displayio.Group()
+
+color_bitmap = displayio.Bitmap(WIDTH, HEIGHT, 1)
+color_palette = displayio.Palette(1)
+color_palette[0] = 0xFFFFFF  # White
+
+header_text = "Binary Keeb 1.0"
+header_area = label.Label(terminalio.FONT, text=header_text, color=0xFFFFFF, x=8, y=8)
+splash.append(header_area)
+body_text = get_bin()
+body_area = label.Label(
+    terminalio.FONT, text=body_text, scale=2, color=0xFFFFFF, x=9, y=44
+)
+splash.append(body_area)
+
+
+# ----- Setting up Display Refresh Function ----- #
+
+def disp_refresh():
+    splash[1].text = get_bin()
+    display.refresh()
 
 while True:
 
@@ -58,7 +104,7 @@ while True:
 
     if switch_a.fell and not switch_a_pressed:
         switch_a_pressed = True
-        fin_op += "0"
+        bin_str += "0"
         pixels[0] = WHITE
     if switch_a.rose:
         switch_a_pressed = False
@@ -66,13 +112,15 @@ while True:
 
     if switch_b.fell and not switch_b_pressed:
         switch_b_pressed = True
-        fin_op += "1"
+        bin_str += "1"
         pixels[1] = WHITE
     if switch_b.rose:
         switch_b_pressed = False
         pixels[1] = CYAN
 
-    if len(fin_op) == 8 :
-        keyboard.send(chr(int(fin_op, 2)))
-        fin_op = ""
+    if len(bin_str) == 8 :
+        keyboard.send(chr(int(bin_str, 2)))
+        bin_str = ""
+
+    disp_refresh()
 
