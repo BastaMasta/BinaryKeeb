@@ -32,6 +32,17 @@ switch_b = Debouncer(switch_b_in)
 switch_a_pressed = False
 switch_b_pressed = False
 
+# ----- Extra Featherwing Buttons ----- #
+button_a_in = DigitalInOut(board.D15)
+button_b_in = DigitalInOut(board.D32)
+button_c_in = DigitalInOut(board.D14)
+button_a_in.pull = Pull.UP
+button_b_in.pull = Pull.UP
+button_c_in.pull = Pull.UP
+button_a = Debouncer(button_a_in)
+button_b = Debouncer(button_b_in)
+button_c = Debouncer(button_c_in)
+
 # ----- NeoPixel setup ----- #
 MAGENTA = 0xFF00FF
 CYAN = 0x0088DD
