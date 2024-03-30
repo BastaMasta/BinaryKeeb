@@ -17,7 +17,7 @@ This project utilises the [Adafruit ESP32 Feather V2](https://www.adafruit.com/p
 
 ## Progress
 
-Originally, I had intended for this project to be in Arduino code, as evident [here](/src/arduino/binary_keeb.ino/binary_keeb.ino), however, the Adafruit ESP32 Feather V2 does not have HID support (for the Keyboard.h header to function), hence the project was shifted over to CircuitPython, Adafruit's fork of MicroPython, built for the Adafruit boards.
+Originally, I had intended for this project to be in Arduino code, as evident [here](/src/arduino/binary_keeb.ino), however, the Adafruit ESP32 Feather V2 does not have HID support (for the Keyboard.h header to function), hence the project was shifted over to CircuitPython, Adafruit's fork of MicroPython, built for the Adafruit boards.
 
 I have completed most of the code for the keyboard to function properly, and will begin testing once my boards arrive.
 
