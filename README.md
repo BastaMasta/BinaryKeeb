@@ -21,6 +21,8 @@ Originally, I had intended for this project to be in Arduino code, as evident [h
 
 I have completed most of the code for the keyboard to function properly, and will begin testing once my boards arrive.
 
+![current atatus image](/assets/binkeeb_pic1.jpeg?raw=true)
+
 
 ## Furure plans?
 
