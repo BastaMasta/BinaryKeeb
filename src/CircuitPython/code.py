@@ -4,6 +4,10 @@ import displayio
 from digitalio import DigitalInOut, Pull
 from adafruit_debouncer import Debouncer
 import neopixel
+import usb_hid
+from adafruit_hid.keyboard import Keyboard
+from adafruit_hid.keyboard_layout_us import KeyboardLayoutUS
+from adafruit_hid.keycode import Keycode
 
 # Compatibility with both CircuitPython 8.x.x and 9.x.x.
 # Remove after 8.x.x is no longer a supported release.
@@ -37,9 +41,9 @@ display = adafruit_displayio_sh1107.SH1107(
 
 time.sleep(1)
 
-# Keypad Setup
-switch_a_in = DigitalInOut(board.D14)
-switch_b_in = DigitalInOut(board.D32)
+# ----- Keypad setup ----- #
+switch_a_in = DigitalInOut(board.D5)
+switch_b_in = DigitalInOut(board.D6)
 switch_a_in.pull = Pull.UP
 switch_b_in.pull = Pull.UP
 switch_a = Debouncer(switch_a_in)
@@ -47,14 +51,14 @@ switch_b = Debouncer(switch_b_in)
 switch_a_pressed = False
 switch_b_pressed = False
 
-# Key colour setup
+# ----- Key colour setup ----- #
 DLIME = 0x33CC33
 CYAN = 0x0088DD
 WHITE = 0xCCCCCC
 BLACK = 0x000000
 
 # Set neopixel colours
-pixel_pin = board.D15
+pixel_pin = board.D9
 pixels = neopixel.NeoPixel(pixel_pin, 2, brightness=1.0)
 pixels.fill(BLACK)
 time.sleep(0.3)
@@ -64,6 +68,10 @@ pixels.fill(BLACK)
 time.sleep(0.3)
 pixels[0] = DLIME
 pixels[1] = CYAN
+
+# ----- Keyboard setup ----- #
+keyboard = Keyboard(usb_hid.devices)
+keyboard_layout = KeyboardLayoutUS(keyboard)  # We're in the US :)
 
 # Make the display context
 splash = displayio.Group()
@@ -116,7 +124,7 @@ def get_bin():
 tempy = ""
 
 while True:
-    
+
     switch_a.update()  # Debouncer checks for changes in switch state
     switch_b.update()
 
@@ -139,7 +147,23 @@ while True:
     if switch_b.rose:
         switch_b_pressed = False
         pixels[1] = CYAN
-    
+
     if len(bin_str) == 8 :
-        text_area2.text = str("       " + chr(int(bin_str, 2))).format(time.monotonic())
+        if (int(bin_str,2) < 41 or int(bin_str,2) > 127) and int(bin_str,2) != 8 and int(bin_str,2) != 27:
+            text_area2.text = str("Invalid binary").format(time.monotonic())
+        else:
+            keyboard_layout.write(chr(int(bin_str, 2)))
+
+            if bin_str == "00001000":
+                text_area2.text = str("   BACKSPACE").format(time.monotonic())
+            elif bin_str == "00001001":
+                text_area2.text = str("     TAB").format(time.monotonic())
+            elif bin_str == "00001010":
+                text_area2.text = str("    ENTER").format(time.monotonic())
+            elif bin_str == "00011011":
+                text_area2.text = str("    ESCAPE").format(time.monotonic())
+            elif bin_str == "01111111":
+                text_area2.text = str("    DELETE").format(time.monotonic())
+            else:
+                text_area2.text = str("       " + chr(int(bin_str, 2))).format(time.monotonic())
         bin_str = ""
